@@ -72,4 +72,3 @@ class Player:
 
     def get_end(self):
         return self.end
-

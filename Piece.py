@@ -1,4 +1,6 @@
+#Piece.py
 from graphics import *
+
 
 class Piece:
 
@@ -29,8 +31,6 @@ class Piece:
     def move(self, times):
         # See parcheesi.jpg for E (Edges) 1 - 8 and P (Points) 1 - 4 References
         for x in range(times):
-            print(f"Current X: {self.shape.getCenter().getX()}")
-            print(f"Current Y: {self.shape.getCenter().getY()}\n")
             if self.times_moved == 63:  # Move to get to home, when the piece has traveled all around.
                 if self.shape.getCenter().getY() == 29:
                     self.shape.move(0, 41.5)  # Movement for blue Pieces to End
@@ -103,8 +103,6 @@ class Piece:
 
             self.times_moved += 1
 
-        print(f"Current X: {self.shape.getCenter().getX()}")
-        print(f"Current Y: {self.shape.getCenter().getY()}\n")
 
     def moveToStart(self):
         while self.shape.getCenter().getX() != self.startX:

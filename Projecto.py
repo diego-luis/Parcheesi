@@ -90,8 +90,6 @@ class Piece:
     def move(self, times):
         # See parcheesi.jpg for E (Edges) 1 - 8 and P (Points) 1 - 4 References
         for x in range(times):
-            print(f"Current X: {self.shape.getCenter().getX()}")
-            print(f"Current Y: {self.shape.getCenter().getY()}\n")
             if self.times_moved == 63:  # Move to get to home, when the piece has traveled all around.
                 if self.shape.getCenter().getY() == 29:
                     self.shape.move(0, 41.5)  # Movement for blue Pieces to End
@@ -164,8 +162,6 @@ class Piece:
 
             self.times_moved += 1
 
-        print(f"Current X: {self.shape.getCenter().getX()}")
-        print(f"Current Y: {self.shape.getCenter().getY()}\n")
 
     def moveToStart(self):
         while self.shape.getCenter().getX() != self.startX:
@@ -301,18 +297,6 @@ class Player:
     def get_end(self):
         return self.end
 
-    '''
-    def move(self, n, places_to_move):
-        if n == 1:
-            self.p1.move(places_to_move)
-        elif n == 2:
-            self.p2.move(places_to_move)
-        elif n == 3:
-            self.p3.move(places_to_move)
-        else:
-            self.p4.move(places_to_move)
-    '''
-
 
 class Board:
 
@@ -377,19 +361,16 @@ class Board:
 
             elif dices[1] == 5 and dices[0] != 5:
                 for dice in reversed(dices):
-                    print(f"First Die is {dice}")
                     if self.players[i].start == 4:  # If all pieces are on start
                         self.players[i].spawn()
 
-                    elif 0 < self.players[i].start < 4:  # if one or more pieces are in the Path
-
+                    elif 0 < self.players[i].start < 4 and dice == 5:  # if one or more pieces are in the Path
                         choice = self.spawnorMove()  # The Player chooses to Spawn a Piece or Move a Piece
 
                         if choice == 1:  # Choice for Spawn
                             self.players[i].spawn()
 
                         else:  # Choice for Move
-
                             movedaPiece = False  # Variable to continue
                             while movedaPiece is False:
                                 piece_num = self.boxToPiece(i)  # The player clicks a box to choose which Piece to move
@@ -414,28 +395,39 @@ class Board:
                                 if movedaPiece is False:
                                     print("Piece cant be moved")
 
+                    else:
+                        movedaPiece = False  # Variable to continue
+                        while movedaPiece is False:
+                            piece_num = self.boxToPiece(i)  # The player clicks a box to choose which Piece to move
+                            nextcoord = self.players[i].pieces[piece_num].nextcoords(i, dice)
+
+                            if self.isSafeSpot(nextcoord) and self.isOccupied(nextcoord, i):
+                                pass  # Cant move the Piece if next coord is a safe space and is occupied:
+                            elif self.isSafeSpot(nextcoord):
+                                self.players[i].pieces[piece_num].move(dice)
+                                self.isEndCoord(nextcoord, i)
+                                movedaPiece = True
+                            elif self.isOccupied(nextcoord, i):
+                                self.eat(nextcoord)
+                                self.players[i].pieces[piece_num].move(dice)
+                                self.isEndCoord(nextcoord, i)
+                                movedaPiece = True
+                            else:
+                                self.players[i].pieces[piece_num].move(dice)
+                                self.isEndCoord(nextcoord, i)
+                                movedaPiece = True
+
+                            if movedaPiece is False:
+                                print("Piece cant be moved")
+
 
                 break
 
 
 
             elif d == 5:  # If the dice is five(5)
-                    print(f"Player {i+1}")
-                    print("Before Spawn")
-                    print(f"Amount of Pieces in Start: {self.players[i].start}")
-                    print(f"Amount of Pieces in Path: {self.players[i].path}")
                     if self.players[i].start == 4:  # If all pieces are on start
-
                         self.players[i].spawn()
-                        print("After Spawn")
-                        print(f"Amount of Pieces in Start: {self.players[i].start}")
-                        print(f"Amount of Pieces in Path: {self.players[i].path}")
-
-                        #self.players[i].add_path()
-
-                        print("After Path")
-                        print(f"Amount of Pieces in Start: {self.players[i].start}")
-                        print(f"Amount of Pieces in Path: {self.players[i].path}")
 
 
                     elif 0 < self.players[i].start < 4:  # if one or more pieces are in the Path
@@ -452,13 +444,13 @@ class Board:
                                 piece_num = self.boxToPiece(i) # The player clicks a box to choose which Piece to move
                                 nextcoord = self.players[i].pieces[piece_num].nextcoords(i, d)
 
-                                if self.isSafeSpot(nextcoord) and self.isOccupied(nextcoord):
+                                if self.isSafeSpot(nextcoord) and self.isOccupied(nextcoord, i):
                                     pass  # Cant move the Piece if next coord is a safe space and is occupied:
                                 elif self.isSafeSpot(nextcoord):
                                     self.players[i].pieces[piece_num].move(d)
                                     self.isEndCoord(nextcoord, i)
                                     movedaPiece = True
-                                elif self.isOccupied(nextcoord):
+                                elif self.isOccupied(nextcoord, i):
                                     self.eat(nextcoord)
                                     self.players[i].pieces[piece_num].move(d)
                                     self.isEndCoord(nextcoord,i)
@@ -479,13 +471,13 @@ class Board:
                         piece_num = self.boxToPiece(i)  # The player clicks a box to choose which Piece to move
                         nextcoord = self.players[i].pieces[piece_num].nextcoords(i, d)
 
-                        if self.isSafeSpot(nextcoord) and self.isOccupied(nextcoord):
+                        if self.isSafeSpot(nextcoord) and self.isOccupied(nextcoord, i):
                             pass  # Cant move the Piece if next coord is a safe space and is occupied:
                         elif self.isSafeSpot(nextcoord):
                             self.players[i].pieces[piece_num].move(d)
                             self.isEndCoord(nextcoord, i)
                             movedaPiece = True
-                        elif self.isOccupied(nextcoord):
+                        elif self.isOccupied(nextcoord, i):
                             self.eat(nextcoord)
                             self.players[i].pieces[piece_num].move(d)
                             self.isEndCoord(nextcoord, i)
@@ -528,16 +520,22 @@ class Board:
         nextY = nextcoord.getY()
         for s in self.safe_spots:
             if nextX == s.getX() and nextY == s.getY():
+                print("Its Safe")
                 return True
+        print("NOT Safe")
         return False
 
-    def isOccupied(self, nextcoord):
+    def isOccupied(self, nextcoord,i):
         nextX = nextcoord.getX()
         nextY = nextcoord.getY()
         for pl in self.players:
             for pi in pl.pieces:
-                if nextX == pi.shape.getCenter().getX() and nextY == pi.shape.getCenter().getY():
+                if self.players == pl:
+                    pass
+                elif nextX == pi.shape.getCenter().getX() and nextY == pi.shape.getCenter().getY():
+                    print("Its Occupied")
                     return True
+        print("Its not Occupied")
         return False
 
     def eat(self,nextcoord):
