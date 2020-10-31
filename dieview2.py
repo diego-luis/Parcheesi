@@ -16,8 +16,7 @@ class DieView:
         self.foreground = "black" # color of the pips
         self.psize = 0.1 * size   # radius of each pip
         hsize = size / 2.0        # half of size
-        offset = 0.6 * hsize      # distance from center
-                                    to outer pips
+        offset = 0.6 * hsize      # distance from center to outer pips
 
         # create a square for the face
         cx, cy = center.getX(), center.getY()
@@ -28,7 +27,7 @@ class DieView:
         rect.setFill(self.background)
 
         # Create 7 circles for standard pip locations
-        self.pips = [ self.__makePip(cx-offset, cy-offset),
+        self.pips = [ self.__makePip(cx-offset, cy-offset ),
                       self.__makePip(cx-offset, cy),
                       self.__makePip(cx-offset, cy+offset),
                       self.__makePip(cx, cy),
@@ -59,3 +58,11 @@ class DieView:
         # Turn the appropriate pips back on
         for i in self.onTable[value]:
             self.pips[i].setFill(self.foreground)
+
+def main():
+    win = GraphWin("Title", 1500, 1024)
+    dies = DieView(win, Point(1400, 500), 100)
+    dies.setValue(4)
+    win.getMouse()
+
+main()
